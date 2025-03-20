@@ -7,6 +7,7 @@ from pdf_to_text import extract_text_from_pdfs_in_directory
 import requests
 import json
 
+global documents, doc_names  # Need to declare as global first
 documents, doc_names = extract_text_from_pdfs_in_directory("/Users/bhuvan.dixit/Documents/Docs/OI")
 
 # Initialize models
@@ -99,8 +100,14 @@ def query_documents(query, top_k=2):
             'relevant_doc_names': relevant_doc_names,
             'ai_response': f"Error calling AI API: {str(e)}"
         }
+    
+def update_document():
+    global documents, doc_names  
+    documents, doc_names = extract_text_from_pdfs_in_directory("/Users/bhuvan.dixit/Documents/Docs/OI")
+    print(len(documents))
+    print("Model updated!")
 
-# Example usage with user input
+
 if __name__ == "__main__":
     while True:
         user_query = input("Enter your query (or 'quit' to exit): ")

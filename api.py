@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from catgorize_docs import query_documents
+from catgorize_docs import query_documents, update_document         
 import uvicorn
 
 app = FastAPI(title="Document Query API")
@@ -24,6 +24,10 @@ class QueryResponse(BaseModel):
     relevant_doc_names: list[str]
     ai_response: str
 
+# Sample curl:
+# curl --location 'http://localhost:7158/query' \
+# --header 'Content-Type: application/json' \
+# --data '{"query": "List all inward assist apis which don'\''t use redis", "top_k": 2}'
 @app.post("/query", response_model=QueryResponse)
 async def process_query(query_request: Query):
     try:
@@ -34,6 +38,17 @@ async def process_query(query_request: Query):
             relevant_doc_names=results['relevant_doc_names'],
             ai_response=results['ai_response']
         )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    
+# Sample curl:
+# curl --location 'http://localhost:7158/update' \
+# --header 'Content-Type: application/json'
+@app.get("/update")
+async def process_query():
+    try:
+        update_document()
+        return {"status" : "success"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
